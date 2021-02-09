@@ -5,10 +5,15 @@ const getProducts = async (req, res) => {
   try {
     const data = await Product.findAll(filters);
     const products = data.map(({ dataValues: product }) => {
-      product.shouldRestock = product.stock < product.minStock;
+      product.shouldRestock = 'no';
+      if (product.stock < product.minStock) {
+        product.shouldRestock = 'yes';
+      }
+      if (product.stock === product.minStock) {
+        product.shouldRestock = 'shortly';
+      }
       return product;
     });
-    console.log(products);
     return res
       .json({
         status: 'success',
